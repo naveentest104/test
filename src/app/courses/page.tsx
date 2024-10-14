@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Navbar } from "../components/ui/navbar"
+import { Navbar } from "../../components/ui/navbar"
 import CourseCard from '../components/course-components/CourseCard' // Import CourseCard from the new file
 
 const courses = [

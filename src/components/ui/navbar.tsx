@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bell, ChevronDown, Menu, Search, X } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { cn } from '../../app/lib/utils';
 import {
   NavigationMenu,
   NavigationMenuContent,

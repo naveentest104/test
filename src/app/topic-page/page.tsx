@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/ca
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
 import { useRouter } from 'next/navigation'
 
-import { Navbar } from "../components/ui/navbar"
+import { Navbar } from "../../components/ui/navbar"
 
 
 

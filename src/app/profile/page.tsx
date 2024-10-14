@@ -6,7 +6,7 @@ import { BookOpen, FileQuestion, Award, Clock } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
-import { Navbar } from "../components/ui/navbar"
+import { Navbar } from "../../components/ui/navbar"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Switch } from "@/app/components/ui/switch"
