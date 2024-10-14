@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle, CreditCard, PayPal, Smartphone } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import {

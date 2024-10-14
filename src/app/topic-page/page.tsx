@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Home, BookOpen, FileQuestion, User, Menu, Play, Pause, RotateCcw, ChevronRight, CheckCircle, XCircle } from 'lucide-react'
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Progress } from "@/app/components/ui/progress"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"

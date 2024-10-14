@@ -3,11 +3,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { BookOpen, FileQuestion, Award, Clock } from 'lucide-react'
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/avatar"
 import { Navbar } from "../components/ui/navbar"
-import { Input } from "@/app/components/ui/input"
+import { Input } from "@/components/ui/input"
 import { Label } from "@/app/components/ui/label"
 import { Switch } from "@/app/components/ui/switch"
 

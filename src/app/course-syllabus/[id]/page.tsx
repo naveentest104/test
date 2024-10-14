@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronDown, ChevronUp, Book, Clock, Award, Play, CheckCircle } from 'lucide-react'
-import { Button } from "../../components/ui/button"
+import { Button } from "../../../components/ui/button"
 import { Card, CardContent } from "../../components/ui/card"
 import { Badge } from "../../components/ui/badge"
 import { Navbar } from "../../components/ui/navbar"

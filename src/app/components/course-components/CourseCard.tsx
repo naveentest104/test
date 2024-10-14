@@ -1,7 +1,7 @@
 // src/components/CourseCard.tsx
 import { useState } from 'react'
 import { Star, Clock, DollarSign, ChevronRight } from 'lucide-react'
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Badge } from "@/app/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import EnrollmentModal from './enrollment-modal' // Adjust the import path

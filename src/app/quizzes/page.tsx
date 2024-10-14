@@ -3,11 +3,10 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Home, BookOpen, FileQuestion, User, Menu, CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
 import { Progress } from "@/app/components/ui/progress"
-import { Navbar } from "../components/ui/navbar"
 import Confetti from 'react-confetti'
 
 const quizzes = [
@@ -96,14 +95,11 @@ const QuizQuestion = ({ question, onAnswer, userAnswer }) => (
 
 
 export default function Quizzes() {
-  const [isNavExpanded, setIsNavExpanded] = useState(true)
   const [selectedQuiz, setSelectedQuiz] = useState(null)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [userAnswers, setUserAnswers] = useState({})
   const [quizCompleted, setQuizCompleted] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
-
-  const toggleNavbar = () => setIsNavExpanded(!isNavExpanded)
 
   const handleQuizSelect = (quiz) => {
     setSelectedQuiz(quiz)
@@ -142,8 +138,7 @@ export default function Quizzes() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
-      <Navbar isExpanded={isNavExpanded} toggleNavbar={toggleNavbar} />
-      <main className={`transition-all duration-300 ${isNavExpanded ? 'ml-60' : 'ml-16'}`}>
+      <main className="transition-all duration-300">
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold text-gray-900">Quizzes</h1>
