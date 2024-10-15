@@ -1,71 +1,186 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import { Play, RotateCcw, Save, Sun, Moon } from 'lucide-react';
-import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import React, { useState, useEffect } from 'react';
+import { Play, RotateCcw, Save, Sun, Moon, Code, Settings } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/app/lib/utils";
+import Editor, { loader } from '@monaco-editor/react';
 
-const Playground = () => {
-  const [code, setCode] = useState('// Write your code here');
+// Pre-load Monaco Editor
+loader.init().then(monaco => {
+  console.log('Monaco Editor loaded');
+});
+
+const Playground: React.FC = () => {
+  const [code, setCode] = useState('// Write your code here...');
   const [output, setOutput] = useState('');
-  const [theme, setTheme] = useState('dark');
+  const [theme, setTheme] = useState('vs-dark');
+  const [language, setLanguage] = useState('javascript');
+  const [fontSize, setFontSize] = useState(14);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const savedCode = localStorage.getItem('playgroundCode');
+    if (savedCode) {
+      setCode(savedCode);
+    }
+  }, []);
 
   const runCode = () => {
     try {
-      // This is a simple evaluation. In a real-world scenario, you'd want to use a more secure method.
-      const result = eval(code);
-      setOutput(String(result));
-    } catch (error) {
+      const logs: string[] = [];
+      const originalLog = console.log;
+
+      // Override console.log to capture logs
+      console.log = (...args) => {
+        logs.push(args.map(arg => JSON.stringify(arg)).join(' '));
+      };
+
+      const result = eval(code); // NOTE: Avoid eval in production.
+
+      console.log = originalLog; // Restore console.log
+      setOutput(logs.join('\n') + (result !== undefined ? `\nResult: ${String(result)}` : ''));
+      
+      toast({
+        title: "Code executed successfully",
+        description: "Check the output below",
+      });
+    } catch (error: any) {
       setOutput(`Error: ${error.message}`);
+      toast({
+        title: "Error executing code",
+        description: error.message,
+        variant: "destructive",
+      });
     }
   };
 
   const resetCode = () => {
-    setCode('// Write your code here');
+    setCode('// Write your code here...');
     setOutput('');
+    localStorage.removeItem('playgroundCode');
+    toast({
+      title: "Code reset",
+      description: "The editor has been reset to default",
+    });
   };
 
   const saveCode = () => {
-    // In a real app, you'd implement actual saving functionality here
-    console.log('Code saved:', code);
+    localStorage.setItem('playgroundCode', code);
+    toast({
+      title: "Code saved",
+      description: "Your code has been saved locally",
+    });
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(theme === 'vs-light' ? 'vs-dark' : 'vs-light');
   };
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
+    <div className={`min-h-screen flex flex-col ${theme === 'vs-dark' ? 'bg-gray-900 text-white' : 'bg-white text-gray-900'}`}>
       <header className="p-6 flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Coding Playground</h1>
+          <h1 className="text-3xl font-bold mb-2">Advanced Coding Playground</h1>
           <p className="text-sm text-gray-400">Test your code, solve challenges, and learn by doing.</p>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="text-sm">
-            <span className="font-semibold">User:</span> John Doe
-          </div>
+          <Select onValueChange={setLanguage} defaultValue={language}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Language" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="javascript">JavaScript</SelectItem>
+              <SelectItem value="typescript">TypeScript</SelectItem>
+              <SelectItem value="python">Python</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select onValueChange={(value) => setFontSize(Number(value))} defaultValue={fontSize.toString()}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Font Size" />
+            </SelectTrigger>
+            <SelectContent>
+              {[12, 14, 16, 18, 20].map((size) => (
+                <SelectItem key={size} value={size.toString()}>{size}px</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button onClick={toggleTheme} variant="outline" size="icon">
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === 'vs-dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
         </div>
       </header>
 
-      <main className="container mx-auto p-6">
-        <Tabs defaultValue="javascript" className="w-full">
+      <main className="flex-grow container mx-auto p-6 flex flex-col">
+        <Tabs defaultValue="code" className="flex-grow flex flex-col">
           <TabsList>
-            <TabsTrigger value="javascript">JavaScript</TabsTrigger>
-            <TabsTrigger value="html" disabled>HTML</TabsTrigger>
-            <TabsTrigger value="css" disabled>CSS</TabsTrigger>
+            <TabsTrigger value="code"><Code className="mr-2 h-4 w-4" /> Code</TabsTrigger>
+            <TabsTrigger value="settings"><Settings className="mr-2 h-4 w-4" /> Settings</TabsTrigger>
           </TabsList>
-          <TabsContent value="javascript" className="mt-4">
-            <div className="border rounded-lg overflow-hidden">
-              <textarea
+          <TabsContent value="code" className="mt-4 flex-grow flex flex-col">
+            <div className="border rounded-lg overflow-hidden flex-grow">
+              <Editor
+                height="70vh"  // Set height to a specific value
+                language={language}
+                theme={theme}
                 value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="w-full h-96 p-4 bg-gray-800 text-white font-mono text-sm"
-                placeholder="Write your code here..."
+                onChange={(value) => setCode(value || '')}
+                options={{
+                  fontSize: fontSize,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  wordWrap: 'on',
+                }}
               />
+            </div>
+          </TabsContent>
+          <TabsContent value="settings" className="mt-4">
+            <div className={cn("p-4 rounded-lg", theme === 'vs-dark' ? 'bg-gray-800' : 'bg-gray-100')}>
+              <h2 className="text-xl font-semibold mb-4">Editor Settings</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Theme</label>
+                  <Select onValueChange={setTheme} defaultValue={theme}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Theme" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="vs-dark">Dark</SelectItem>
+                      <SelectItem value="vs-light">Light</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Language</label>
+                  <Select onValueChange={setLanguage} defaultValue={language}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select Language" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="javascript">JavaScript</SelectItem>
+                      <SelectItem value="typescript">TypeScript</SelectItem>
+                      <SelectItem value="python">Python</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Font Size</label>
+                  <Select onValueChange={(value) => setFontSize(Number(value))} defaultValue={fontSize.toString()}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Font Size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {[12, 14, 16, 18, 20].map((size) => (
+                        <SelectItem key={size} value={size.toString()}>{size}px</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
@@ -82,9 +197,9 @@ const Playground = () => {
           </Button>
         </div>
 
-        <div className={`mt-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
-          <h2 className="text-xl font-semibold mb-2">Console Output</h2>
-          <pre className={`p-2 rounded ${theme === 'dark' ? 'bg-black' : 'bg-white'} ${output.startsWith('Error') ? 'text-red-500' : 'text-green-500'}`}>
+        <div className={cn("mt-4 p-4 rounded-lg", theme === 'vs-dark' ? 'bg-gray-800' : 'bg-gray-100')}>
+          <h2 className="text-xl font-semibold mb-2">Output</h2>
+          <pre className={cn("p-2 rounded", theme === 'vs-dark' ? 'bg-black' : 'bg-white', output.startsWith('Error') ? 'text-red-500' : 'text-green-500')}>
             {output || 'Run your code to see the output here.'}
           </pre>
         </div>
@@ -95,8 +210,9 @@ const Playground = () => {
           <a href="#" className="hover:underline">Documentation</a> | 
           <a href="#" className="hover:underline ml-2">Keyboard Shortcuts</a>
         </div>
-        <div>© 2023 EduHub Coding Playground. All rights reserved.</div>
+        <div>© 2023 Advanced Coding Playground. All rights reserved.</div>
       </footer>
+      <Toaster />
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
   MagnifyingGlassIcon,
   ArrowRightIcon,
 } from '@heroicons/react/24/solid';
+import PopularTracks from '@/components/PopularTracks';
 
 // Mock data (in a real app, this would come from an API)
 const featuredVideo = {
@@ -180,47 +181,8 @@ export default function Home() {
         </section>
 
         {/* Popular Quizzes and Coding Challenges */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Popular Quizzes</h2>
-            <div className="space-y-4">
-              {popularQuizzes.map((quiz) => (
-                <Link
-                  key={quiz.title}
-                  href={quiz.link}
-                  className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-                >
-                  <h3 className="font-semibold mb-2">{quiz.title}</h3>
-                  <p className="text-sm text-gray-600">{quiz.description}</p>
-                </Link>
-              ))}
-            </div>
-          </section>
-          <section>
-            <h2 className="text-2xl font-bold mb-4">Coding Challenges</h2>
-            <div className="space-y-4">
-              {codingChallenges.map((challenge) => (
-                <Link
-                  key={challenge.title}
-                  href={challenge.link}
-                  className="block bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-                >
-                  <h3 className="font-semibold mb-2">{challenge.title}</h3>
-                  <span
-                    className={`text-sm px-2 py-1 rounded ${
-                      challenge.difficulty === 'Easy'
-                        ? 'bg-green-200 text-green-800'
-                        : challenge.difficulty === 'Medium'
-                        ? 'bg-yellow-200 text-yellow-800'
-                        : 'bg-red-200 text-red-800'
-                    }`}
-                  >
-                    {challenge.difficulty}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
+        <div >
+         <PopularTracks />
         </div>
 
         {/* Community Discussions */}
