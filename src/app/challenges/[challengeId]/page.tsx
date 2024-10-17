@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from '@/components/ui/button';
-import { Editor } from "@monaco-editor/react"; // Using Monaco Editor for coding playground
-import { cn } from "../../lib/utils"; // Your utility for classnames
+import { Button } from '@/app/components/ui/button';
+import { Editor } from "@monaco-editor/react";
 
-// Simulate fetching coding challenge data from an API or database
-async function getChallengeData(challengeId: string) {
+interface ChallengeData {
+  title: string;
+  description: string;
+  examples: { input: string; output: string }[];
+}
+
+async function getChallengeData(challengeId: string): Promise<ChallengeData> {
   return {
     title: `Challenge ${challengeId}: FizzBuzz`,
     description: `Write a program that prints the numbers from 1 to 100. But for multiples of three print "Fizz" instead of the number and for the multiples of five print "Buzz". For numbers which are multiples of both three and five print "FizzBuzz".`,
@@ -18,13 +22,17 @@ async function getChallengeData(challengeId: string) {
   };
 }
 
-const CodingChallengePage = ({ params }) => {
-  const { challengeId } = params; // Fetch challengeId from the URL
-  const [challengeData, setChallengeData] = useState(null);
-  const [code, setCode] = useState("// Write your code here...");
-  const [output, setOutput] = useState("");
-  const [testCases, setTestCases] = useState([""]);
-  const [language, setLanguage] = useState("javascript"); // Default language
+interface CodingChallengePageProps {
+  params: { challengeId: string };
+}
+
+export default function CodingChallengePage({ params }: CodingChallengePageProps) {
+  const { challengeId } = params;
+  const [challengeData, setChallengeData] = useState<ChallengeData | null>(null);
+  const [code, setCode] = useState<string>("// Write your code here...");
+  const [output, setOutput] = useState<string>("");
+  const [testCases, setTestCases] = useState<string[]>([""]);
+  const [language, setLanguage] = useState<"javascript" | "python" | "java">("javascript");
 
   useEffect(() => {
     async function fetchData() {
@@ -35,12 +43,10 @@ const CodingChallengePage = ({ params }) => {
   }, [challengeId]);
 
   const runCode = async () => {
-    // Depending on the selected language, run the corresponding code
     try {
-      let results;
+      let results: (string | number)[];
 
       if (language === "javascript") {
-        // Evaluate JavaScript code
         const testFunction = new Function("testCases", `
           return testCases.map(test => {
             const num = parseInt(test);
@@ -52,21 +58,22 @@ const CodingChallengePage = ({ params }) => {
         `);
         results = testFunction(testCases);
       } else if (language === "python") {
-        // Simulated response for Python code execution
         results = await runPythonCode(testCases);
-      } else if (language === "java") {
-        // Simulated response for Java code execution
+      } else {
         results = await runJavaCode(testCases);
       }
 
       setOutput(JSON.stringify(results));
     } catch (error) {
-      setOutput(`Error: ${error.message}`);
+      if (error instanceof Error) {
+        setOutput(`Error: ${error.message}`);
+      } else {
+        setOutput("An unknown error occurred");
+      }
     }
   };
 
-  const runPythonCode = async (testCases) => {
-    // Simulate running Python code (replace with actual API call)
+  const runPythonCode = async (testCases: string[]): Promise<(string | number)[]> => {
     return testCases.map(test => {
       const num = parseInt(test);
       if (num % 15 === 0) return "FizzBuzz";
@@ -76,8 +83,7 @@ const CodingChallengePage = ({ params }) => {
     });
   };
 
-  const runJavaCode = async (testCases) => {
-    // Simulate running Java code (replace with actual API call)
+  const runJavaCode = async (testCases: string[]): Promise<(string | number)[]> => {
     return testCases.map(test => {
       const num = parseInt(test);
       if (num % 15 === 0) return "FizzBuzz";
@@ -88,19 +94,19 @@ const CodingChallengePage = ({ params }) => {
   };
 
   const addTestCase = () => {
-    setTestCases([...testCases, ""]); // Add a new empty test case
+    setTestCases([...testCases, ""]);
   };
 
-  const handleTestCaseChange = (index, value) => {
+  const handleTestCaseChange = (index: number, value: string) => {
     const newTestCases = [...testCases];
     newTestCases[index] = value;
     setTestCases(newTestCases);
   };
 
-  const handleLanguageChange = (event) => {
-    setLanguage(event.target.value);
-    setCode("// Write your code here..."); // Reset code on language change
-    setOutput(""); // Clear output on language change
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setLanguage(event.target.value as "javascript" | "python" | "java");
+    setCode("// Write your code here...");
+    setOutput("");
   };
 
   if (!challengeData) {
@@ -142,7 +148,7 @@ const CodingChallengePage = ({ params }) => {
           height="300px"
           language={language}
           value={code}
-          onChange={(value) => setCode(value)}
+          onChange={(value) => setCode(value || "")}
           options={{
             selectOnLineNumbers: true,
             automaticLayout: true,
@@ -173,6 +179,4 @@ const CodingChallengePage = ({ params }) => {
       </div>
     </div>
   );
-};
-
-export default CodingChallengePage;
+}

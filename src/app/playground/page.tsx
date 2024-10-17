@@ -2,24 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { Play, RotateCcw, Save, Sun, Moon, Code, Settings } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Toaster } from "@/components/ui/toaster";
+import { Button } from "@/app/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { Toaster } from "@/app/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/app/lib/utils";
+import { cn } from "@/lib/utils";
 import Editor, { loader } from '@monaco-editor/react';
 
 // Pre-load Monaco Editor
-loader.init().then(monaco => {
+loader.init().then(() => {
   console.log('Monaco Editor loaded');
 });
 
 const Playground: React.FC = () => {
   const [code, setCode] = useState('// Write your code here...');
   const [output, setOutput] = useState('');
-  const [theme, setTheme] = useState('vs-dark');
-  const [language, setLanguage] = useState('javascript');
+  const [theme, setTheme] = useState<'vs-dark' | 'vs-light'>('vs-dark');
+  const [language, setLanguage] = useState<'javascript' | 'typescript' | 'python'>('javascript');
   const [fontSize, setFontSize] = useState(14);
   const { toast } = useToast();
 
@@ -36,7 +36,7 @@ const Playground: React.FC = () => {
       const originalLog = console.log;
 
       // Override console.log to capture logs
-      console.log = (...args) => {
+      console.log = (...args: unknown[]) => {
         logs.push(args.map(arg => JSON.stringify(arg)).join(' '));
       };
 
@@ -49,13 +49,22 @@ const Playground: React.FC = () => {
         title: "Code executed successfully",
         description: "Check the output below",
       });
-    } catch (error: any) {
-      setOutput(`Error: ${error.message}`);
-      toast({
-        title: "Error executing code",
-        description: error.message,
-        variant: "destructive",
-      });
+    } catch (error) {
+      if (error instanceof Error) {
+        setOutput(`Error: ${error.message}`);
+        toast({
+          title: "Error executing code",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        setOutput("An unknown error occurred");
+        toast({
+          title: "Error executing code",
+          description: "An unknown error occurred",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -89,7 +98,7 @@ const Playground: React.FC = () => {
           <p className="text-sm text-gray-400">Test your code, solve challenges, and learn by doing.</p>
         </div>
         <div className="flex items-center space-x-4">
-          <Select onValueChange={setLanguage} defaultValue={language}>
+          <Select onValueChange={(value: 'javascript' | 'typescript' | 'python') => setLanguage(value)} defaultValue={language}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Language" />
             </SelectTrigger>
@@ -124,7 +133,7 @@ const Playground: React.FC = () => {
           <TabsContent value="code" className="mt-4 flex-grow flex flex-col">
             <div className="border rounded-lg overflow-hidden flex-grow">
               <Editor
-                height="70vh"  // Set height to a specific value
+                height="70vh"
                 language={language}
                 theme={theme}
                 value={code}
@@ -144,7 +153,7 @@ const Playground: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-1">Theme</label>
-                  <Select onValueChange={setTheme} defaultValue={theme}>
+                  <Select onValueChange={(value: 'vs-dark' | 'vs-light') => setTheme(value)} defaultValue={theme}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Theme" />
                     </SelectTrigger>
@@ -156,7 +165,7 @@ const Playground: React.FC = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">Language</label>
-                  <Select onValueChange={setLanguage} defaultValue={language}>
+                  <Select onValueChange={(value: 'javascript' | 'typescript' | 'python') => setLanguage(value)} defaultValue={language}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select Language" />
                     </SelectTrigger>

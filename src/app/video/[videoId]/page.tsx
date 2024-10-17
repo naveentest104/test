@@ -2,17 +2,32 @@
 
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'; // Update the import path
-import { Editor } from '@tinymce/tinymce-react'; // Use TinyMCE as a rich text editor
+import { Button } from '@/app/components/ui/button';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/app/components/ui/tabs';
+import { Editor } from '@tinymce/tinymce-react';
 
-// Simulate fetching video data from an API or database
-async function getVideoData(videoId: string) {
+interface VideoData {
+  title: string;
+  description: string;
+  videoUrl: string;
+  quiz: {
+    questions: {
+      id: number;
+      question: string;
+      options: string[];
+      correct: string;
+    }[];
+  };
+  notes: string;
+  textExplanation: string;
+}
+
+async function getVideoData(videoId: string): Promise<VideoData> {
   // In a real scenario, replace this with a fetch call to an API
   return {
     title: `Video Lesson ${videoId}`,
     description: `This video covers important topics related to ${videoId}. Watch, take quizzes, and add your own notes.`,
-    videoUrl: `/videos/sample-video.mp4`, // Add your video URL here
+    videoUrl: `/videos/sample-video.mp4`,
     quiz: {
       questions: [
         { id: 1, question: 'What is the main concept discussed in this video?', options: ['A', 'B', 'C', 'D'], correct: 'B' },
@@ -24,9 +39,10 @@ async function getVideoData(videoId: string) {
   };
 }
 
-const VideoPage = () => {
-  const { videoId } = useParams(); // Fetch videoId from the URL
-  const [videoData, setVideoData] = useState(null);
+export default function VideoPage() {
+  const params = useParams();
+  const videoId = params.videoId as string;
+  const [videoData, setVideoData] = useState<VideoData | null>(null);
   const [notes, setNotes] = useState("");
 
   useEffect(() => {
@@ -84,7 +100,7 @@ const VideoPage = () => {
             <Editor
               initialValue={notes}
               onEditorChange={handleNoteChange}
-              apiKey="YOUR_TINYMCE_API_KEY" // Replace with your TinyMCE API key
+              apiKey="YOUR_TINYMCE_API_KEY"
               init={{
                 height: 300,
                 menubar: false,
@@ -130,6 +146,4 @@ const VideoPage = () => {
       </Tabs>
     </div>
   );
-};
-
-export default VideoPage;
+}

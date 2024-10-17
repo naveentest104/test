@@ -44,27 +44,27 @@ const latestVideos = [
   },
 ];
 
-const popularQuizzes = [
-  {
-    title: 'Basic Chemistry Quiz',
-    description: 'Test your knowledge of chemical elements and reactions',
-    link: '/quizzes/1',
-  },
-  {
-    title: 'English Grammar Challenge',
-    description: 'Master your understanding of grammar rules',
-    link: '/quizzes/2',
-  },
-];
+// const popularQuizzes = [
+//   {
+//     title: 'Basic Chemistry Quiz',
+//     description: 'Test your knowledge of chemical elements and reactions',
+//     link: '/quizzes/1',
+//   },
+//   {
+//     title: 'English Grammar Challenge',
+//     description: 'Master your understanding of grammar rules',
+//     link: '/quizzes/2',
+//   },
+// ];
 
-const codingChallenges = [
-  { title: 'FizzBuzz Challenge', difficulty: 'Easy', link: '/challenges/1' },
-  {
-    title: 'Binary Search Implementation',
-    difficulty: 'Medium',
-    link: '/challenges/2',
-  },
-];
+// const codingChallenges = [
+//   { title: 'FizzBuzz Challenge', difficulty: 'Easy', link: '/challenges/1' },
+//   {
+//     title: 'Binary Search Implementation',
+//     difficulty: 'Medium',
+//     link: '/challenges/2',
+//   },
+// ];
 
 const communityDiscussions = [
   {

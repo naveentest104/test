@@ -1,10 +1,40 @@
 "use client"
-import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
-// Simulate fetching topic data from an API or database
-async function getTopicData(topicId: string) {
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Button } from '@/app/components/ui/button';
+import Link from 'next/link';
+import Image from 'next/image';
+
+interface Video {
+  id: string;
+  title: string;
+  duration: string;
+  thumbnail: string;
+}
+
+interface Challenge {
+  id: string;
+  title: string;
+  difficulty: string;
+  thumbnail: string;
+}
+
+interface Discussion {
+  id: string;
+  user: string;
+  comment: string;
+}
+
+interface TopicData {
+  title: string;
+  description: string;
+  videos: Video[];
+  challenges: Challenge[];
+  discussions: Discussion[];
+}
+
+async function getTopicData(topicId: string): Promise<TopicData> {
   // In a real scenario, replace this with a fetch call to an API
   return {
     title: `Topic ${topicId}`,
@@ -14,13 +44,13 @@ async function getTopicData(topicId: string) {
         id: '101',
         title: `Introduction to ${topicId}`,
         duration: '10:35',
-        thumbnail: '/images/video1.jpg', // Adding thumbnail
+        thumbnail: '/images/video1.jpg',
       },
       {
         id: '102',
         title: `Advanced Concepts in ${topicId}`,
         duration: '18:20',
-        thumbnail: '/images/video2.jpg', // Adding thumbnail
+        thumbnail: '/images/video2.jpg',
       },
     ],
     challenges: [
@@ -28,7 +58,7 @@ async function getTopicData(topicId: string) {
         id: '201',
         title: `${topicId} Challenge 1`,
         difficulty: 'medium',
-        thumbnail: '/images/challenge1.jpg', // Adding thumbnail
+        thumbnail: '/images/challenge1.jpg',
       },
     ],
     discussions: [
@@ -38,9 +68,22 @@ async function getTopicData(topicId: string) {
   };
 }
 
-const TopicPage = async () => {
-  const { topicId } = useParams();  // Fetch topicId from the URL
-  const topicData = await getTopicData(topicId);  // Fetch data for the topic
+export default function TopicPage() {
+  const params = useParams();
+  const topicId = params.topicId as string;
+  const [topicData, setTopicData] = useState<TopicData | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getTopicData(topicId);
+      setTopicData(data);
+    }
+    fetchData();
+  }, [topicId]);
+
+  if (!topicData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -60,7 +103,7 @@ const TopicPage = async () => {
               className="border border-gray-300 p-4 rounded-lg shadow-lg hover:shadow-xl transition"
             >
               {/* Video Thumbnail */}
-              <img src={video.thumbnail} alt={video.title} className="w-full h-48 object-cover rounded-lg mb-4" />
+              <Image src={video.thumbnail} alt={video.title} width={400} height={225} className="w-full h-48 object-cover rounded-lg mb-4" />
               <h3 className="font-bold text-xl">{video.title}</h3>
               <p className="text-sm text-gray-500">Duration: {video.duration}</p>
               <Link href={`/video/${video.id}`}>
@@ -82,7 +125,7 @@ const TopicPage = async () => {
                 className="border border-gray-300 p-4 rounded-lg shadow-lg hover:shadow-xl transition"
               >
                 {/* Challenge Thumbnail */}
-                <img src={challenge.thumbnail} alt={challenge.title} className="w-full h-48 object-cover rounded-lg mb-4" />
+                <Image src={challenge.thumbnail} alt={challenge.title} width={400} height={225} className="w-full h-48 object-cover rounded-lg mb-4" />
                 <h3 className="font-bold text-xl">{challenge.title}</h3>
                 <p className="text-sm text-gray-500 capitalize">Difficulty: {challenge.difficulty}</p>
                 <Link href={`/challenge/${challenge.id}`}>
@@ -115,6 +158,4 @@ const TopicPage = async () => {
       </section>
     </div>
   );
-};
-
-export default TopicPage;
+}

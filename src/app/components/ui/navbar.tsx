@@ -2,9 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Bell, ChevronDown, Menu, Search, X } from 'lucide-react';
-import { cn } from '../../app/lib/utils';
+import { Bell, Menu, Search, X } from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,14 +10,13 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+} from "./navigation-menu"
+import { Input } from "@/app/components/ui/input"
+import { Button } from "./button"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasNotifications, setHasNotifications] = useState(true);
-  const router = useRouter();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 

@@ -1,43 +1,38 @@
 "use client"
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Home, BookOpen, FileQuestion, User, Menu, CheckCircle, XCircle, ArrowLeft } from 'lucide-react'
-import { Button } from "@/components/ui/button"
+import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
+import { Button } from "@/app/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
 import { Badge } from "@/app/components/ui/badge"
 import { Progress } from "@/app/components/ui/progress"
 import Confetti from 'react-confetti'
+import { supabase } from '../../lib/supabaseClient'
 
-const quizzes = [
-  {
-    id: 1,
-    title: 'Introduction to AI',
-    description: 'Test your knowledge on AI basics',
-    questionCount: 10,
-    timeLimit: 15,
-    questions: [
-      { id: 1, question: 'What does AI stand for?', options: ['Artificial Intelligence', 'Automated Integration', 'Advanced Iteration', 'Algorithmic Invention'], correctAnswer: 0 },
-      { id: 2, question: 'Which of these is NOT a type of machine learning?', options: ['Supervised Learning', 'Unsupervised Learning', 'Reinforcement Learning', 'Intuitive Learning'], correctAnswer: 3 },
-      // Add more questions here
-    ]
-  },
-  {
-    id: 2,
-    title: 'Machine Learning Fundamentals',
-    description: 'Challenge yourself with ML concepts',
-    questionCount: 15,
-    timeLimit: 20,
-    questions: [
-      { id: 1, question: 'What is the primary goal of supervised learning?', options: ['Clustering', 'Classification', 'Dimensionality Reduction', 'Anomaly Detection'], correctAnswer: 1 },
-      { id: 2, question: 'Which algorithm is commonly used for linear regression?', options: ['K-Means', 'Decision Trees', 'Ordinary Least Squares', 'Principal Component Analysis'], correctAnswer: 2 },
-      // Add more questions here
-    ]
-  },
-  // Add more quizzes here
-]
+type Quiz = {
+  id: string;
+  title: string;
+  description?: string;
+  question_count: number;
+  time_limit?: number;
+}
 
-const QuizCard = ({ quiz, onClick }) => (
+type Question = {
+  id: string;
+  question_text: string;
+  question_type: 'multiple_choice' | 'true_false' | 'short_answer';
+  points: number;
+  answers: Answer[];
+}
+
+type Answer = {
+  id: string;
+  answer_text: string;
+  is_correct: boolean;
+}
+
+const QuizCard = ({ quiz, onClick }: { quiz: Quiz; onClick: (quiz: Quiz) => void }) => (
   <Card className="cursor-pointer bg-white border border-[#e0e0e0] shadow-lg transition-transform duration-300 hover:shadow-xl hover:border-[#4CAF50]" onClick={() => onClick(quiz)}>
     <CardHeader>
       <CardTitle className="text-xl font-bold text-[#4CAF50]">{quiz.title}</CardTitle>
@@ -45,8 +40,8 @@ const QuizCard = ({ quiz, onClick }) => (
     </CardHeader>
     <CardContent>
       <div className="flex justify-between items-center mb-2">
-        <Badge variant="secondary">{quiz.questionCount} Questions</Badge>
-        <Badge variant="outline">{quiz.timeLimit} Minutes</Badge>
+        <Badge variant="secondary">{quiz.question_count} Questions</Badge>
+        {quiz.time_limit && <Badge variant="outline">{quiz.time_limit} Minutes</Badge>}
       </div>
     </CardContent>
     <CardFooter>
@@ -55,32 +50,33 @@ const QuizCard = ({ quiz, onClick }) => (
   </Card>
 )
 
-const QuizQuestion = ({ question, onAnswer, userAnswer }) => (
+const QuizQuestion = ({ question, onAnswer, userAnswer }: { question: Question; onAnswer: (answerIndex: number) => void; userAnswer?: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     exit={{ opacity: 0, y: -20 }}
-    className="mb-6 p-4 bg-gray-100 shadow rounded-lg" // Keeping the background color
+    className="mb-6 p-4 bg-gray-100 shadow rounded-lg" 
   >
-    <h3 className="text-lg font-semibold text-blue-600 mb-4">{question.question}</h3> {/* Changed heading color to blue */}
+    <h3 className="text-lg font-semibold text-blue-600 mb-4">{question.question_text}</h3> 
     <div className="space-y-2">
-      {question.options.map((option, index) => (
+      {question.answers.map((answer, index) => (
         <motion.button
           key={index}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => onAnswer(index)}
-          className={`w-full p-3 text-left rounded-md transition-colors ${userAnswer === index
-            ? userAnswer === question.correctAnswer
-              ? 'bg-green-100 border-2 border-green-500 text-gray-800' // Darker text color for visibility
-              : 'bg-red-100 border-2 border-red-500 text-gray-800'
-            : 'bg-gray-200 hover:bg-gray-300 text-gray-800' // Darker text color
-            }`}
+          className={`w-full p-3 text-left rounded-md transition-colors ${
+            userAnswer === index
+              ? answer.is_correct
+                ? 'bg-green-100 border-2 border-green-500 text-gray-800'
+                : 'bg-red-100 border-2 border-red-500 text-gray-800'
+              : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+          }`}
         >
-          {option}
+          {answer.answer_text}
           {userAnswer === index && (
             <span className="float-right">
-              {userAnswer === question.correctAnswer ? (
+              {answer.is_correct ? (
                 <CheckCircle className="h-5 w-5 text-green-500" />
               ) : (
                 <XCircle className="h-5 w-5 text-red-500" />
@@ -93,47 +89,107 @@ const QuizQuestion = ({ question, onAnswer, userAnswer }) => (
   </motion.div>
 )
 
-
 export default function Quizzes() {
-  const [selectedQuiz, setSelectedQuiz] = useState(null)
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
-  const [userAnswers, setUserAnswers] = useState({})
-  const [quizCompleted, setQuizCompleted] = useState(false)
-  const [showConfetti, setShowConfetti] = useState(false)
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleQuizSelect = (quiz) => {
-    setSelectedQuiz(quiz)
-    setCurrentQuestionIndex(0)
-    setUserAnswers({})
-    setQuizCompleted(false)
-    setShowConfetti(false)
-  }
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('Quiz')
+        .select(`
+          id,
+          title,
+          description,
+          (SELECT COUNT(*) FROM QuizQuestion WHERE quiz_id = Quiz.id) as question_count
+        `);
 
-  const handleAnswer = (answerIndex) => {
-    if (!quizCompleted) {
-      setUserAnswers({ ...userAnswers, [currentQuestionIndex]: answerIndex })
+      if (error) {
+        console.error("Error fetching quizzes:", error);
+        setError("Failed to load quizzes. Please try again later.");
+      } else {
+        setQuizzes(data as Quiz[]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchQuizzes();
+  }, []);
+
+  const handleQuizSelect = async (quiz: Quiz) => {
+    setSelectedQuiz(quiz);
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('QuizQuestion')
+      .select(`
+        id,
+        question_text,
+        question_type,
+        points,
+        QuizAnswer (id, answer_text, is_correct)
+      `)
+      .eq('quiz_id', quiz.id);
+
+    if (error) {
+      console.error("Error fetching questions:", error);
+      setError("Failed to load quiz questions. Please try again later.");
+    } else {
+      setQuestions(data.map(q => ({
+        ...q,
+        answers: q.QuizAnswer
+      })));
     }
-  }
+    setCurrentQuestionIndex(0);
+    setUserAnswers({});
+    setQuizCompleted(false);
+    setShowConfetti(false);
+    setIsLoading(false);
+  };
+
+  const handleAnswer = (answerIndex: number) => {
+    if (!quizCompleted && questions[currentQuestionIndex]) {
+      setUserAnswers({ ...userAnswers, [questions[currentQuestionIndex].id]: answerIndex });
+    }
+  };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < selectedQuiz.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1)
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      setQuizCompleted(true)
-      if (calculateScore() >= 80) { // Check for good marks (80% or above)
+      setQuizCompleted(true);
+      if (calculateScore() >= 80) {
         setShowConfetti(true);
       }
     }
-  }
+  };
 
   const calculateScore = () => {
-    let correctAnswers = 0
-    selectedQuiz.questions.forEach((question, index) => {
-      if (userAnswers[index] === question.correctAnswer) {
-        correctAnswers++
+    let totalPoints = 0;
+    let earnedPoints = 0;
+    questions.forEach((question) => {
+      totalPoints += question.points;
+      const userAnswerIndex = userAnswers[question.id];
+      if (userAnswerIndex !== undefined && question.answers[userAnswerIndex].is_correct) {
+        earnedPoints += question.points;
       }
-    })
-    return (correctAnswers / selectedQuiz.questions.length) * 100
+    });
+    return (earnedPoints / totalPoints) * 100;
+  };
+
+  if (isLoading) {
+    return <div className="text-center mt-8">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-8 text-red-500">{error}</div>;
   }
 
   return (
@@ -186,16 +242,18 @@ export default function Quizzes() {
                   {!quizCompleted ? (
                     <>
                       <Progress
-                        value={(currentQuestionIndex + 1) / selectedQuiz.questions.length * 100}
+                        value={(currentQuestionIndex + 1) / questions.length * 100}
                         className="mb-4"
                       />
-                      <QuizQuestion
-                        question={selectedQuiz.questions[currentQuestionIndex]}
-                        onAnswer={handleAnswer}
-                        userAnswer={userAnswers[currentQuestionIndex]}
-                      />
+                      {questions[currentQuestionIndex] && (
+                        <QuizQuestion
+                          question={questions[currentQuestionIndex]}
+                          onAnswer={handleAnswer}
+                          userAnswer={userAnswers[questions[currentQuestionIndex].id]}
+                        />
+                      )}
                       <Button onClick={handleNextQuestion} className="mt-4 bg-[#4CAF50] hover:bg-[#45a049]">
-                        {currentQuestionIndex < selectedQuiz.questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                        {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
                       </Button>
                     </>
                   ) : (
@@ -216,5 +274,5 @@ export default function Quizzes() {
         </div>
       </main>
     </div>
-  )
+  );
 }

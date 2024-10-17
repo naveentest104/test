@@ -1,12 +1,25 @@
-// src/components/CourseCard.tsx
 import { useState } from 'react'
 import { Star, Clock, DollarSign, ChevronRight } from 'lucide-react'
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/components/ui/button"
 import { Badge } from "@/app/components/ui/badge"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/app/components/ui/card"
-import EnrollmentModal from './enrollment-modal' // Adjust the import path
+import EnrollmentModal from './enrollment-modal'
 
-const CourseCard = ({ course }) => {
+interface Course {
+  id: string;
+  title: string;
+  description: string;
+  level: string;
+  rating: number;
+  duration: string;
+  price: number;
+}
+
+interface CourseCardProps {
+  course: Course;
+}
+
+export default function CourseCard({ course }: CourseCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
@@ -39,12 +52,9 @@ const CourseCard = ({ course }) => {
         </Button>
       </CardFooter>
       
-      {/* Enrollment Modal */}
       {isModalOpen && (
         <EnrollmentModal course={course} onClose={() => setIsModalOpen(false)} />
       )}
     </Card>
   )
 }
-
-export default CourseCard

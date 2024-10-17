@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle, CreditCard, PayPal, Smartphone } from "lucide-react";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
+import {  CheckCircle, CreditCard, Smartphone } from "lucide-react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
 import {
@@ -13,7 +13,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "../ui/dialog";
 
 interface Course {
@@ -130,7 +129,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ course, onClose }) =>
               className="text-center"
             >
               <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
-              <p className="mt-4 text-lg font-semibold text-white">You're all set!</p>
+              <p className="mt-4 text-lg font-semibold text-white">You&rsquo;re all set!</p>
               <p className="mt-2 text-sm text-gray-400">Your course begins on {new Date().toLocaleDateString()}</p>
               <Button className="mt-4">Start Learning</Button>
             </motion.div>

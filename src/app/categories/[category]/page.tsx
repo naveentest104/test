@@ -1,11 +1,31 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/app/components/ui/button';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-// Simulate fetching category data from an API or database
-async function getCategoryData(category: string) {
+interface LearningContent {
+  id: string;
+  title: string;
+  description: string;
+  type: 'video' | 'article';
+}
+
+interface QuizTopic {
+  id: string;
+  title: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+}
+
+interface CategoryData {
+  title: string;
+  description: string;
+  learningContent: LearningContent[];
+  quizTopics: QuizTopic[];
+}
+
+async function getCategoryData(category: string): Promise<CategoryData> {
   // In a real scenario, replace this with a fetch call to an API
   return {
     title: category,
@@ -21,9 +41,22 @@ async function getCategoryData(category: string) {
   };
 }
 
-const CategoryPage = async () => {
-  const { category } = useParams();  // Fetch category from the URL
-  const categoryData = await getCategoryData(category);  // Fetch data for the category
+export default function CategoryPage() {
+  const params = useParams();
+  const category = params.category as string;
+  const [categoryData, setCategoryData] = useState<CategoryData | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const data = await getCategoryData(category);
+      setCategoryData(data);
+    }
+    fetchData();
+  }, [category]);
+
+  if (!categoryData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto p-4">
@@ -73,6 +106,4 @@ const CategoryPage = async () => {
       </section>
     </div>
   );
-};
-
-export default CategoryPage;
+}

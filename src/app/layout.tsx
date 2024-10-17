@@ -1,14 +1,8 @@
 import './globals.css';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import Navbar from '@/components/ui/navbar';
+import Navbar from '@/app/components/ui/navbar';
 
 const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Learning Platform',
-  description: 'A comprehensive learning platform with videos, quizzes, and coding playground',
-};
 
 export default function RootLayout({
   children,

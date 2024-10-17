@@ -2,7 +2,7 @@
 "use client";
 
 import { usePathname } from 'next/navigation';
-import Navbar from '../components/ui/navbar';
+import Navbar from './components/ui/navbar';
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();

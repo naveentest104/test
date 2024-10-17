@@ -3,12 +3,32 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronDown, ChevronUp, Book, Clock, Award, Play, CheckCircle } from 'lucide-react'
-import { Button } from "../../../components/ui/button"
+import { Button } from "../../components/ui/button"
 import { Card, CardContent } from "../../components/ui/card"
 import { Badge } from "../../components/ui/badge"
-import { Navbar } from "../../../components/ui/navbar"
 
-const courseSyllabus = {
+// Define types for the course syllabus structure
+interface Topic {
+  title: string
+  progress: number
+}
+
+interface Module {
+  id: number
+  title: string
+  duration: string
+  topics: Topic[]
+  progress: number
+}
+
+interface CourseSyllabus {
+  title: string
+  description: string
+  overallProgress: number
+  modules: Module[]
+}
+
+const courseSyllabus: CourseSyllabus = {
   title: "Introduction to AI",
   description: "Learn the basics of Artificial Intelligence and its applications.",
   overallProgress: 50,
@@ -71,7 +91,14 @@ const courseSyllabus = {
   ],
 }
 
-const CustomProgressBar = ({ progress, totalModules, completedModules }) => {
+// Define props types for CustomProgressBar
+interface CustomProgressBarProps {
+  progress: number
+  totalModules: number
+  completedModules: number
+}
+
+const CustomProgressBar: React.FC<CustomProgressBarProps> = ({ progress, totalModules, completedModules }) => {
   return (
     <div className="relative pt-1">
       <div className="flex mb-2 items-center justify-between">
@@ -103,7 +130,14 @@ const CustomProgressBar = ({ progress, totalModules, completedModules }) => {
   )
 }
 
-const ModuleCard = ({ module, isExpanded, toggleExpand }) => {
+// Define props types for ModuleCard
+interface ModuleCardProps {
+  module: Module
+  isExpanded: boolean
+  toggleExpand: () => void
+}
+
+const ModuleCard: React.FC<ModuleCardProps> = ({ module, isExpanded, toggleExpand }) => {
   const progressColor = module.progress === 100 ? "bg-green-500" : "bg-teal-500"
 
   return (
@@ -172,12 +206,10 @@ const ModuleCard = ({ module, isExpanded, toggleExpand }) => {
 }
 
 export default function CourseSyllabus() {
-  const [expandedModule, setExpandedModule] = useState(null)
-  const [isNavExpanded, setIsNavExpanded] = useState(true)
+  const [expandedModule, setExpandedModule] = useState<number | null>(null)
 
-  const toggleNavbar = () => setIsNavExpanded(!isNavExpanded)
 
-  const toggleExpand = (moduleId) => {
+  const toggleExpand = (moduleId: number) => {
     setExpandedModule(expandedModule === moduleId ? null : moduleId)
   }
 
@@ -186,8 +218,7 @@ export default function CourseSyllabus() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
-      <Navbar isExpanded={isNavExpanded} toggleNavbar={toggleNavbar} />
-      <main className={`transition-all duration-300 ${isNavExpanded ? 'ml-60' : 'ml-16'} p-8`}>
+      <main className="">
         <div className="max-w-4xl mx-auto">
           <div className="mb-8 flex items-center justify-between">
             <Button variant="outline" size="sm" className="text-teal-600 border-teal-600 hover:bg-teal-100">
