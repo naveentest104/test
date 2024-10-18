@@ -116,7 +116,7 @@ export default function Quizzes() {
         console.error("Error fetching quizzes:", error);
         setError("Failed to load quizzes. Please try again later.");
       } else {
-        setQuizzes(data as Quiz[]);
+        setQuizzes(data as unknown as Quiz[]);
       }
       setIsLoading(false);
     };

@@ -1,6 +1,8 @@
-"use client";
+
+'use client';
 
 import React, { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Play, RotateCcw, Save, Sun, Moon, Code, Settings } from 'lucide-react';
 import { Button } from "@/app/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
@@ -8,12 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Toaster } from "@/app/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import Editor, { loader } from '@monaco-editor/react';
 
-// Pre-load Monaco Editor
-loader.init().then(() => {
-  console.log('Monaco Editor loaded');
-});
+// Dynamically import the Editor component with SSR disabled
+const Editor = dynamic(
+  () => import('@monaco-editor/react').then((mod) => mod.default),
+  { ssr: false }
+);
 
 const Playground: React.FC = () => {
   const [code, setCode] = useState('// Write your code here...');
@@ -24,9 +26,12 @@ const Playground: React.FC = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const savedCode = localStorage.getItem('playgroundCode');
-    if (savedCode) {
-      setCode(savedCode);
+    // Only access localStorage in the browser
+    if (typeof window !== 'undefined') {
+      const savedCode = localStorage.getItem('playgroundCode');
+      if (savedCode) {
+        setCode(savedCode);
+      }
     }
   }, []);
 
@@ -35,14 +40,14 @@ const Playground: React.FC = () => {
       const logs: string[] = [];
       const originalLog = console.log;
 
-      // Override console.log to capture logs
       console.log = (...args: unknown[]) => {
         logs.push(args.map(arg => JSON.stringify(arg)).join(' '));
       };
 
-      const result = eval(code); // NOTE: Avoid eval in production.
+      // Use Function constructor instead of eval for better security
+      const result = new Function(code)();
 
-      console.log = originalLog; // Restore console.log
+      console.log = originalLog;
       setOutput(logs.join('\n') + (result !== undefined ? `\nResult: ${String(result)}` : ''));
       
       toast({
@@ -71,7 +76,9 @@ const Playground: React.FC = () => {
   const resetCode = () => {
     setCode('// Write your code here...');
     setOutput('');
-    localStorage.removeItem('playgroundCode');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('playgroundCode');
+    }
     toast({
       title: "Code reset",
       description: "The editor has been reset to default",
@@ -79,7 +86,9 @@ const Playground: React.FC = () => {
   };
 
   const saveCode = () => {
-    localStorage.setItem('playgroundCode', code);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('playgroundCode', code);
+    }
     toast({
       title: "Code saved",
       description: "Your code has been saved locally",
