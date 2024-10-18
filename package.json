@@ -11,6 +11,7 @@
   "dependencies": {
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/state": "^6.4.1",
+    "@headlessui/react": "^2.1.10",
     "@heroicons/react": "^2.1.5",
     "@hookform/resolvers": "^3.9.0",
     "@monaco-editor/react": "^4.6.0",
@@ -61,7 +62,9 @@
     "react-dom": "^18",
     "react-hook-form": "^7.53.0",
     "react-hot-toast": "^2.4.1",
+    "react-markdown": "^9.0.1",
     "react-resizable-panels": "^2.1.4",
+    "react-syntax-highlighter": "^15.6.1",
     "recharts": "^2.13.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
