@@ -1,6 +1,6 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, CheckCircle, XCircle } from 'lucide-react'
 import { Button } from "@/app/components/ui/button"
@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/app/components/ui/badge"
 import { Progress } from "@/app/components/ui/progress"
 import Confetti from 'react-confetti'
-import { supabase } from '../../lib/supabaseClient'
 
 type Quiz = {
   id: string;
@@ -30,6 +29,150 @@ type Answer = {
   id: string;
   answer_text: string;
   is_correct: boolean;
+}
+
+const sampleQuizzes: Quiz[] = [
+  {
+    id: '1',
+    title: 'Data Science Fundamentals',
+    description: 'Test your knowledge of basic data science concepts',
+    question_count: 5,
+    time_limit: 10
+  },
+  {
+    id: '2',
+    title: 'Machine Learning Algorithms',
+    description: 'Challenge yourself with questions about ML algorithms',
+    question_count: 5,
+    time_limit: 15
+  }
+]
+
+const sampleQuestions: Record<string, Question[]> = {
+  '1': [
+    {
+      id: '1',
+      question_text: 'What is the primary goal of data preprocessing?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'To make data look visually appealing', is_correct: false },
+        { id: 'b', answer_text: 'To prepare data for analysis and modeling', is_correct: true },
+        { id: 'c', answer_text: 'To increase the size of the dataset', is_correct: false },
+        { id: 'd', answer_text: 'To remove all outliers from the data', is_correct: false }
+      ]
+    },
+    {
+      id: '2',
+      question_text: 'Which of the following is NOT a common type of machine learning?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'Supervised learning', is_correct: false },
+        { id: 'b', answer_text: 'Unsupervised learning', is_correct: false },
+        { id: 'c', answer_text: 'Reinforcement learning', is_correct: false },
+        { id: 'd', answer_text: 'Prescriptive learning', is_correct: true }
+      ]
+    },
+    {
+      id: '3',
+      question_text: 'What does the term "overfitting" refer to in machine learning?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'When a model performs well on training data but poorly on new data', is_correct: true },
+        { id: 'b', answer_text: 'When a model is too simple to capture the underlying patterns', is_correct: false },
+        { id: 'c', answer_text: 'When a dataset is too small for meaningful analysis', is_correct: false },
+        { id: 'd', answer_text: 'When a model takes too long to train', is_correct: false }
+      ]
+    },
+    {
+      id: '4',
+      question_text: 'Which of the following is a measure of central tendency?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'Standard deviation', is_correct: false },
+        { id: 'b', answer_text: 'Variance', is_correct: false },
+        { id: 'c', answer_text: 'Median', is_correct: true },
+        { id: 'd', answer_text: 'Range', is_correct: false }
+      ]
+    },
+    {
+      id: '5',
+      question_text: 'What is the purpose of feature scaling in machine learning?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'To increase the number of features', is_correct: false },
+        { id: 'b', answer_text: 'To normalize the range of independent variables', is_correct: true },
+        { id: 'c', answer_text: 'To remove all categorical variables', is_correct: false },
+        { id: 'd', answer_text: 'To eliminate the need for model training', is_correct: false }
+      ]
+    }
+  ],
+  '2': [
+    {
+      id: '1',
+      question_text: 'Which algorithm is commonly used for classification tasks?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'Linear Regression', is_correct: false },
+        { id: 'b', answer_text: 'K-Means Clustering', is_correct: false },
+        { id: 'c', answer_text: 'Random Forest', is_correct: true },
+        { id: 'd', answer_text: 'Principal Component Analysis', is_correct: false }
+      ]
+    },
+    {
+      id: '2',
+      question_text: 'What is the main purpose of the K-Means algorithm?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'Classification', is_correct: false },
+        { id: 'b', answer_text: 'Regression', is_correct: false },
+        { id: 'c', answer_text: 'Clustering', is_correct: true },
+        { id: 'd', answer_text: 'Dimensionality reduction', is_correct: false }
+      ]
+    },
+    {
+      id: '3',
+      question_text: 'Which of the following is an ensemble learning method?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'Support Vector Machine', is_correct: false },
+        { id: 'b', answer_text: 'Naive Bayes', is_correct: false },
+        { id: 'c', answer_text: 'Decision Tree', is_correct: false },
+        { id: 'd', answer_text: 'Random Forest', is_correct: true }
+      ]
+    },
+    {
+      id: '4',
+      question_text: 'What is the primary goal of the Gradient Descent algorithm?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'To classify data points', is_correct: false },
+        { id: 'b', answer_text: 'To minimize the loss function', is_correct: true },
+        { id: 'c', answer_text: 'To cluster similar data points', is_correct: false },
+        { id: 'd', answer_text: 'To reduce dimensionality', is_correct: false }
+      ]
+    },
+    {
+      id: '5',
+      question_text: 'Which algorithm is based on Bayes\' theorem?',
+      question_type: 'multiple_choice',
+      points: 1,
+      answers: [
+        { id: 'a', answer_text: 'K-Nearest Neighbors', is_correct: false },
+        { id: 'b', answer_text: 'Logistic Regression', is_correct: false },
+        { id: 'c', answer_text: 'Naive Bayes', is_correct: true },
+        { id: 'd', answer_text: 'Decision Trees', is_correct: false }
+      ]
+    }
+  ]
 }
 
 const QuizCard = ({ quiz, onClick }: { quiz: Quiz; onClick: (quiz: Quiz) => void }) => (
@@ -90,119 +233,80 @@ const QuizQuestion = ({ question, onAnswer, userAnswer }: { question: Question; 
 )
 
 export default function Quizzes() {
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<string, number>>({});
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   useEffect(() => {
-    const fetchQuizzes = async () => {
-      setIsLoading(true);
-      const { data, error } = await supabase
-        .from('Quiz')
-        .select(`
-          id,
-          title,
-          description,
-          (SELECT COUNT(*) FROM QuizQuestion WHERE quiz_id = Quiz.id) as question_count
-        `);
-
-      if (error) {
-        console.error("Error fetching quizzes:", error);
-        setError("Failed to load quizzes. Please try again later.");
-      } else {
-        setQuizzes(data as unknown as Quiz[]);
-      }
-      setIsLoading(false);
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
     };
-
-    fetchQuizzes();
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleQuizSelect = async (quiz: Quiz) => {
+  const handleQuizSelect = (quiz: Quiz) => {
     setSelectedQuiz(quiz);
-    setIsLoading(true);
-    const { data, error } = await supabase
-      .from('QuizQuestion')
-      .select(`
-        id,
-        question_text,
-        question_type,
-        points,
-        QuizAnswer (id, answer_text, is_correct)
-      `)
-      .eq('quiz_id', quiz.id);
-
-    if (error) {
-      console.error("Error fetching questions:", error);
-      setError("Failed to load quiz questions. Please try again later.");
-    } else {
-      setQuestions(data.map(q => ({
-        ...q,
-        answers: q.QuizAnswer
-      })));
-    }
     setCurrentQuestionIndex(0);
     setUserAnswers({});
     setQuizCompleted(false);
     setShowConfetti(false);
-    setIsLoading(false);
   };
 
   const handleAnswer = (answerIndex: number) => {
-    if (!quizCompleted && questions[currentQuestionIndex]) {
-      setUserAnswers({ ...userAnswers, [questions[currentQuestionIndex].id]: answerIndex });
+    if (!quizCompleted && selectedQuiz) {
+      const currentQuestion = sampleQuestions[selectedQuiz.id][currentQuestionIndex];
+      setUserAnswers({ ...userAnswers, [currentQuestion.id]: answerIndex });
     }
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < questions.length - 1) {
+    if (selectedQuiz && currentQuestionIndex < selectedQuiz.question_count - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       setQuizCompleted(true);
-      if (calculateScore() >= 80) {
+      const score = calculateScore();
+      if (score >= 80) {
         setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
       }
     }
   };
 
   const calculateScore = () => {
-    let totalPoints = 0;
+    if (!selectedQuiz) return 0;
     let earnedPoints = 0;
-    questions.forEach((question) => {
-      totalPoints += question.points;
+    sampleQuestions[selectedQuiz.id].forEach((question) => {
       const userAnswerIndex = userAnswers[question.id];
       if (userAnswerIndex !== undefined && question.answers[userAnswerIndex].is_correct) {
         earnedPoints += question.points;
       }
     });
-    return (earnedPoints / totalPoints) * 100;
+    return (earnedPoints / selectedQuiz.question_count) * 100;
   };
-
-  if (isLoading) {
-    return <div className="text-center mt-8">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center mt-8 text-red-500">{error}</div>;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
+      {showConfetti && (
+        <Confetti
+          width={windowSize.width}
+          height={windowSize.height}
+          recycle={false}
+          numberOfPieces={200}
+        />
+      )}
       <main className="transition-all duration-300">
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Quizzes</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">Data Science Quizzes</h1>
           </div>
         </header>
         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0">
-            {showConfetti && <Confetti />}
             <AnimatePresence mode="wait">
               {!selectedQuiz ? (
                 <motion.div
@@ -212,10 +316,10 @@ export default function Quizzes() {
                   exit={{ opacity: 0 }}
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                 >
-                  {quizzes.map((quiz) => (
+                  {sampleQuizzes.map((quiz) => (
                     <motion.div
                       key={quiz.id}
-                      whileHover={{ scale: 1.03 }}
+                      whileHover={{ scale: 1.03  }}
                       transition={{ duration: 0.2 }}
                     >
                       <QuizCard quiz={quiz} onClick={handleQuizSelect} />
@@ -242,18 +346,18 @@ export default function Quizzes() {
                   {!quizCompleted ? (
                     <>
                       <Progress
-                        value={(currentQuestionIndex + 1) / questions.length * 100}
+                        value={(currentQuestionIndex + 1) / selectedQuiz.question_count * 100}
                         className="mb-4"
                       />
-                      {questions[currentQuestionIndex] && (
+                      {sampleQuestions[selectedQuiz.id][currentQuestionIndex] && (
                         <QuizQuestion
-                          question={questions[currentQuestionIndex]}
+                          question={sampleQuestions[selectedQuiz.id][currentQuestionIndex]}
                           onAnswer={handleAnswer}
-                          userAnswer={userAnswers[questions[currentQuestionIndex].id]}
+                          userAnswer={userAnswers[sampleQuestions[selectedQuiz.id][currentQuestionIndex].id]}
                         />
                       )}
                       <Button onClick={handleNextQuestion} className="mt-4 bg-[#4CAF50] hover:bg-[#45a049]">
-                        {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                        {currentQuestionIndex < selectedQuiz.question_count - 1 ? 'Next Question' : 'Finish Quiz'}
                       </Button>
                     </>
                   ) : (
