@@ -1,4 +1,3 @@
-import { CardHeader, CardTitle, CardDescription } from "@/app/components/ui/card";
 import { Book, Brain, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import FeatureCard from "./FeatureCard";

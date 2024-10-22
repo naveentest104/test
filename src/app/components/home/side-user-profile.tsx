@@ -38,7 +38,7 @@ export default function UserProfile() {
     <Card className="w-full max-w-md mx-auto">
       <CardContent className="flex flex-col items-center p-6">
         <div className="flex items-center space-x-4">
-          <img src="/placeholder.svg?height=100&width=100" alt="Profile picture" className="w-16 h-16 rounded-full" />
+          {/* <img src="/placeholder.svg?height=100&width=100" alt="Profile picture" className="w-16 h-16 rounded-full" /> */}
           <div>
             {isEditing ? (
               <Input

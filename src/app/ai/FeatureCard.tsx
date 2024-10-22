@@ -1,9 +1,10 @@
-import { Card, CardContent, CardFooter, CardHeader, CardTitle,CardDescription } from "@/app/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/app/components/ui/card";
+import { FC } from "react";
 
 interface FeatureCardProps {
   title: string;
   description: string;
-  icon: any;
+  icon: FC<{ className?: string }>; // Specify the type of the icon
 }
 
 export default function FeatureCard({ title, description, icon: Icon }: FeatureCardProps) {
