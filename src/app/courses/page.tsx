@@ -55,18 +55,9 @@ const courses = [
 
 
 export default function Courses() {
-
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
+    <div className="">
       <main className="">
-        <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Courses</h1>
-          </div>
-        </header>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {courses.map((course) => (
                 <motion.div
@@ -78,8 +69,6 @@ export default function Courses() {
                 </motion.div>
               ))}
             </div>
-          </div>
-        </div>
       </main>
     </div>
   )

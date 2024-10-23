@@ -31,7 +31,7 @@ export default function SummaryPage() {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8 bg-gradient-to-br from-blue-100 to-blue-300 min-h-screen flex items-center justify-center">
+    <div className="container mx-auto p-6 space-y-8 min-h-screen flex items-center justify-center">
       <Card className="shadow-2xl w-full max-w-2xl bg-white rounded-lg p-6">
         <CardHeader>
           <CardTitle className="text-3xl font-extrabold text-blue-600 text-center">AI Book Summary Generator</CardTitle>

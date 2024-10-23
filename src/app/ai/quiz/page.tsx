@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function QuizPage() {
   return (
-    <div className="container mx-auto p-6 space-y-8 bg-blue-50 min-h-screen">
+    <div className="container mx-auto p-6 space-y-8 min-h-screen">
       <Card className="bg-white shadow-lg rounded-lg p-6">
         <CardHeader>
           <CardTitle className="text-blue-700 text-2xl">Quiz Generator</CardTitle>

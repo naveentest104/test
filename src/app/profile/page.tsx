@@ -40,15 +40,15 @@ export default function Profile() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
+    <div className="min-h-screen">
 
       <main>
         <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-10xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold text-gray-900">Your Profile</h1>
           </div>
         </header>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="max-w-8xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="md:col-span-1">

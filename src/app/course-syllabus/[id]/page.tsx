@@ -217,9 +217,9 @@ export default function CourseSyllabus() {
   const totalModules = courseSyllabus.modules.length
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
-      <main className="">
-        <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen">
+      <main>
+        <div className="max-w-7xl mx-auto mt-5">
           <div className="mb-8 flex items-center justify-between">
             <Button variant="outline" size="sm" className="text-teal-600 border-teal-600 hover:bg-teal-100">
               <ChevronLeft className="w-4 h-4 mr-2" />

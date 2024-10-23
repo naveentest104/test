@@ -9,6 +9,7 @@ import {
   ArrowRightIcon,
 } from '@heroicons/react/24/solid';
 import PopularTracks from '@/components/PopularTracks';
+import Courses   from '@/app/courses/page'
 
 // Mock data (in a real app, this would come from an API)
 const featuredVideo = {
@@ -18,17 +19,7 @@ const featuredVideo = {
     'Learn the basics of machine learning in this comprehensive overview.',
 };
 
-const categories = [
-  { name: 'Science', icon: '🔬', link: '/categories/science' },
-  { name: 'Math', icon: '🧮', link: '/categories/math' },
-  { name: 'Language Arts', icon: '📚', link: '/categories/language-arts' },
-  { name: 'History', icon: '🏛️', link: '/categories/history' },
-  {
-    name: 'Computer Science',
-    icon: '💻',
-    link: '/categories/computer-science',
-  },
-];
+
 
 const latestVideos = [
   {
@@ -44,27 +35,6 @@ const latestVideos = [
   },
 ];
 
-// const popularQuizzes = [
-//   {
-//     title: 'Basic Chemistry Quiz',
-//     description: 'Test your knowledge of chemical elements and reactions',
-//     link: '/quizzes/1',
-//   },
-//   {
-//     title: 'English Grammar Challenge',
-//     description: 'Master your understanding of grammar rules',
-//     link: '/quizzes/2',
-//   },
-// ];
-
-// const codingChallenges = [
-//   { title: 'FizzBuzz Challenge', difficulty: 'Easy', link: '/challenges/1' },
-//   {
-//     title: 'Binary Search Implementation',
-//     difficulty: 'Medium',
-//     link: '/challenges/2',
-//   },
-// ];
 
 const communityDiscussions = [
   {
@@ -130,19 +100,7 @@ export default function Home() {
 
         {/* Categories Section */}
         <section className="mb-16">
-          <h2 className="text-2xl font-bold mb-4">Explore Categories</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.name}
-                href={category.link}
-                className="bg-white rounded-lg shadow-md p-4 text-center hover:shadow-lg transition-shadow"
-              >
-                <div className="text-4xl mb-2">{category.icon}</div>
-                <div className="font-semibold">{category.name}</div>
-              </Link>
-            ))}
-          </div>
+          <Courses />
         </section>
 
         {/* Latest Videos */}

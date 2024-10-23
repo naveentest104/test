@@ -79,7 +79,7 @@ const EnrollmentModal: React.FC<EnrollmentModalProps> = ({ course, onClose }) =>
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px] bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-san text-black">
+      <DialogContent className="sm:max-w-[425px]  text-black">
         <DialogHeader>
           <DialogTitle className="text-black">
             {isEnrolled ? "Enrollment Successful!" : "Enroll in Course"}

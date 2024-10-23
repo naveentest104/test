@@ -290,7 +290,7 @@ export default function Quizzes() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#e0f7fa] to-[#b2ebf2] font-sans">
+    <div className="min-h-screen">
       {showConfetti && (
         <Confetti
           width={windowSize.width}
@@ -301,11 +301,11 @@ export default function Quizzes() {
       )}
       <main className="transition-all duration-300">
         <header className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-10xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-semibold text-gray-900">Data Science Quizzes</h1>
           </div>
         </header>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="max-w-9xl mx-auto py-6 sm:px-6 lg:px-8">
           <div className="px-4 py-6 sm:px-0">
             <AnimatePresence mode="wait">
               {!selectedQuiz ? (
